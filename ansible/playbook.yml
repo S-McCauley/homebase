@@ -1,0 +1,5 @@
+---
+- name: configure home server
+  hosts: arch-test-server
+  roles:
+    - homeserver
