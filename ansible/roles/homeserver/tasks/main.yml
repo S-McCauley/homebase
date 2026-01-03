@@ -1,0 +1,13 @@
+---
+- name: update homeserver
+  hosts: arch-test-server
+  remote_user: server
+
+  tasks:
+    - name: Ensure all packages are updated
+      ansible.builtin.apt:
+        update_cache: yes
+        upgrade: dist
+        cache_valid_time: 3600
+      become: yes
+      tags: update
