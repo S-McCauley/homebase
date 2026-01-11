@@ -10,3 +10,19 @@
         upgrade: true
       become: yes
       tags: update
+    
+    - name: Check for k3s installation
+      ansible.builtin.stat:
+        path: /usr/local/bin/k3s
+      register: k3s_bin
+
+    - name: Check if k3s service is running
+      ansible.builtin.command: systemctl is-active k3s
+      register: k3s_service_check
+      failed_when: false
+      changed_when: false
+
+    - name: Install k3s
+      ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
+      when: not k3s_bin.stat.exists or k3s_service_check.rc != 0
+      become: yes
