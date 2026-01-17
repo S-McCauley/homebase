@@ -26,3 +26,29 @@
       ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
       when: not k3s_bin.stat.exists or k3s_service_check.rc != 0
       become: yes
+
+    - name: Setup kubectl for the server user
+      become: true
+      block:
+        - name: Create .kube directory in server home directory
+          ansible.builtin.file:
+            path: "/home/server/.kube"
+            state: directory
+            owner: server
+            group: server
+            mode: '0700'
+
+        - name: Copy k3s config to user's local file
+          ansible.builtin.copy:
+            src: /etc/rancher/k3s/k3s.yaml
+            dest: "/home/server/.kube/config"
+            remote_src: yes
+            owner: server
+            group: server
+            mode: '0600'
+
+    - name: Replace localhost with server IP in kubeconfig
+      ansible.builtin.replace:
+        path: "~/.kube/config"
+        regexp: '127.0.0.1'
+        replace: "{{ ansible_host | default(inventory_hostname) }}"
