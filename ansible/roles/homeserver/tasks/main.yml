@@ -23,7 +23,10 @@
       changed_when: false
 
     - name: Install k3s
-      ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
+      ansible.builtin.shell: |
+        curl -sfL https://get.k3s.io | sh -s - \
+        --disable traefik \
+        --tls-san arch-test-server
       when: not k3s_bin.stat.exists or k3s_service_check.rc != 0
       become: yes
 
