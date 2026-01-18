@@ -10,6 +10,12 @@
         upgrade: true
       become: yes
       tags: update
+
+    - name: Install PyYAML      #Required for Helm module
+      community.general.pacman:
+        name: python-pyaml
+        state: present
+      become: yes
     
     - name: Check for k3s installation
       ansible.builtin.stat:
@@ -25,7 +31,6 @@
     - name: Install k3s
       ansible.builtin.shell: |
         curl -sfL https://get.k3s.io | sh -s - \
-        --disable traefik \
         --tls-san arch-test-server
       when: not k3s_bin.stat.exists or k3s_service_check.rc != 0
       become: yes
@@ -51,7 +56,53 @@
             mode: '0600'
 
     - name: Replace localhost with server IP in kubeconfig
-      ansible.builtin.replace:
+      ansible.builtin.replace: 
         path: "~/.kube/config"
         regexp: '127.0.0.1'
         replace: "{{ ansible_host | default(inventory_hostname) }}"
+      # This will need to be modified with the correct host ip once complete
+
+    - name: Install Helm
+      become: yes
+      block:
+        - name: Download Helm installer script
+          ansible.builtin.get_url:
+            url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+            dest: /tmp/get_helm.sh
+            mode: '0700'
+
+        - name: Run Helm installer script
+          ansible.builtin.shell: /tmp/get_helm.sh
+          args:
+            creates: /usr/local/bin/helm
+
+    - name: Add ArgoCD helm repo
+      kubernetes.core.helm_repository:
+        name: argo
+        repo_url: "https://argoproj.github.io/argo-helm"
+
+    - name: Install ArgoCD
+      kubernetes.core.helm:
+        name: argocd
+        chart_ref: argo/argo-cd
+        release_namespace: argocd
+        create_namespace: true
+        binary_path: /usr/local/bin/helm
+        kubeconfig: /home/server/.kube/config
+        values:
+          server:
+            extraArgs:
+              - --insecure
+
+    - name: Copy ArgoCD Ingress manifest to server
+      ansible.builtin.copy:
+        src: ~/projects/homebase/ansible/kubernetes/argocd-ingress.yaml
+        dest: /tmp/argocd-ingress.yaml
+        mode: '0644'
+
+    - name: Apply ArgoCD Ingress
+      ansible.builtin.command: kubectl apply -f /tmp/argocd-ingress.yaml
+      environment:
+        KUBECONFIG: "/home/server/.kube/config"
+      register: kubectl_out
+      changed_when: "'configured' in kubectl_out.stdout or 'created' in kubectl_out.stdout"
