@@ -1,19 +1,25 @@
 ---
 - name: update homeserver
-  hosts: arch-test-server
+  hosts: ubuntu-test-server
   remote_user: server
 
   tasks:
     - name: Ensure all packages are updated
-      community.general.pacman:
+      ansible.builtin.apt:
         update_cache: true
         upgrade: true
       become: yes
       tags: update
 
+    - name: Install Python3
+      ansible.builtin.apt:
+        name: python3
+        state: present
+      become: yes
+
     - name: Install PyYAML      #Required for Helm module
-      community.general.pacman:
-        name: python-pyaml
+      ansible.builtin.apt:
+        name: python3-yaml
         state: present
       become: yes
     
@@ -31,7 +37,7 @@
     - name: Install k3s
       ansible.builtin.shell: |
         curl -sfL https://get.k3s.io | sh -s - \
-        --tls-san arch-test-server
+        --tls-san ubuntu-test-server
       when: not k3s_bin.stat.exists or k3s_service_check.rc != 0
       become: yes
 

@@ -1,5 +1,5 @@
 ---
 - name: configure home server
-  hosts: arch-test-server
+  hosts: ubuntu-test-server
   roles:
     - homeserver
