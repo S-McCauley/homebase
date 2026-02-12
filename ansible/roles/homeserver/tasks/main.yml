@@ -102,7 +102,7 @@
 
     - name: Copy ArgoCD Ingress manifest to server
       ansible.builtin.copy:
-        src: ~/projects/homebase/ansible/kubernetes/argocd-ingress.yaml
+        src: ~/homebase/ansible/kubernetes/argocd-ingress.yaml
         dest: /tmp/argocd-ingress.yaml
         mode: '0644'
 
