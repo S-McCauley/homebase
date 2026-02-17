@@ -1,5 +1,5 @@
 ---
 - name: configure home server
-  hosts: ubuntu-test-server
+  hosts: homebase
   roles:
     - homeserver

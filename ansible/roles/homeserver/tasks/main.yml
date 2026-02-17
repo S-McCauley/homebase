@@ -1,6 +1,6 @@
 ---
 - name: update homeserver
-  hosts: ubuntu-test-server
+  hosts: homebase
   remote_user: server
 
   tasks:
@@ -17,7 +17,7 @@
         state: present
       become: yes
 
-    - name: Install PyYAML      #Required for Helm module
+    - name: Install PyYAML
       ansible.builtin.apt:
         name: python3-yaml
         state: present
@@ -37,7 +37,7 @@
     - name: Install k3s
       ansible.builtin.shell: |
         curl -sfL https://get.k3s.io | sh -s - \
-        --tls-san ubuntu-test-server
+        --tls-san homebase
       when: not k3s_bin.stat.exists or k3s_service_check.rc != 0
       become: yes
 
