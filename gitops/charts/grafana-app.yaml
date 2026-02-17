@@ -1,0 +1,36 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: grafana
+  namespace: argocd
+spec:
+  project: default
+  source:
+    chart: grafana
+    repoURL: https://grafana.github.io/helm-charts
+    targetRevision: 10.5.15
+    helm:
+      values: |
+        ingress:
+          enabled: true
+          hosts:
+            - grafana.local  # Change this to your domain or IP
+
+        # This automatically connects Grafana to Prometheus
+        datasources:
+          datasources.yaml:
+            apiVersion: 1
+            datasources:
+            - name: prometheus
+              type: prometheus
+              url: http://prometheus-server.monitoring.svc.cluster.local
+              access: proxy
+              isDefault: true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: monitoring
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    createNamespace: true
