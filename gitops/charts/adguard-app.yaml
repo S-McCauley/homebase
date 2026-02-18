@@ -6,9 +6,9 @@ metadata:
 spec:
   project: default
   source:
-    repoURL: ghcr.io/bjw-s/helm-charts
+    repoURL: https://helm-charts.rm3l.org
     chart: adguard-home
-    targetRevision: 1.5.1
+    targetRevision: 0.24.0
     helm:
       values: |
         service:
