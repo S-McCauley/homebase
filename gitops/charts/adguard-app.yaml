@@ -13,7 +13,7 @@ spec:
       values: |
         services:
           http:
-            type: LoadBalancer
+            type: ClusterIP
         ingress:
           enabled: true
           annotations:
