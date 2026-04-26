@@ -15,7 +15,7 @@ spec:
   destination:
     server: https://kubernetes.default.svc
     # This is where the app will land
-    namespace: surfreport
+    namespace: surfreporter
   syncPolicy:
     automated:
       prune: true
