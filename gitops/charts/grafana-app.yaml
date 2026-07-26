@@ -14,7 +14,7 @@ spec:
         ingress:
           enabled: true
           hosts:
-            - grafana.local  # Change this to your domain or IP
+            - grafana.local
 
         # This automatically connects Grafana to Prometheus
         datasources:
