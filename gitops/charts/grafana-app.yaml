@@ -26,13 +26,13 @@ spec:
               access: proxy
               isDefault: true
 
-        volumes:
-          config:
-            Type: ConfigMap
-            Name: grafana
-          storage:
-            persistentVolumeClaim:
-              claimName: grafana-storage
+        persistence:
+          enabled: true
+          type: pvc
+          storageClassName: local-path
+          accessModes:
+            - ReadWriteOnce
+          size: 10Gi
             
   destination:
     server: https://kubernetes.default.svc
