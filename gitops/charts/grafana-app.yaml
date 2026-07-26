@@ -16,7 +16,6 @@ spec:
           hosts:
             - grafana.local
 
-        # This automatically connects Grafana to Prometheus
         datasources:
           datasources.yaml:
             apiVersion: 1
