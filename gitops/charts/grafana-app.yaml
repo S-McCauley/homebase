@@ -25,6 +25,15 @@ spec:
               url: http://prometheus-server.monitoring.svc.cluster.local
               access: proxy
               isDefault: true
+
+        volumes:
+          config:
+            Type: ConfigMap
+            Name: grafana
+          storage:
+            persistentVolumeClaim:
+            claimName: grafana-storage
+            
   destination:
     server: https://kubernetes.default.svc
     namespace: monitoring
