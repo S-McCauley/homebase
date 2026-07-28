@@ -33,6 +33,12 @@ spec:
           accessModes:
             - ReadWriteOnce
           size: 10Gi
+
+        securityContext:
+          fsGroup: 472
+
+        initChownData:
+          enabled: false
             
   destination:
     server: https://kubernetes.default.svc
